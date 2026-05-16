@@ -7,6 +7,9 @@
 - cors
 - bcrypt
 - dotenv
-- pg
 - helmet
 - nodemailer
+
+- pg
+- sqlite3
+- sqlite
