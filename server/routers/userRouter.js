@@ -114,7 +114,49 @@ router.delete('/api/tasks/:id', isLoggedIn, isAllowedRole(['customer']), async (
 
 // Assignee
 
-// route til at afgive bud på en opgave
+router.get('/api/offers/my-bids', isLoggedIn, isAllowedRole(['assignee']), async (req, res) => {
+
+    const assigneeId = req.session.user.id;
+
+    const tasksWithMyOffers = await db.all(`
+            SELECT tasks.*, offers.amount AS offer_amount, offers.creation_date AS offer_date
+            FROM tasks
+            JOIN offers ON tasks.id = offers.task_id
+            WHERE offers.assignee_id = ?
+            ORDER BY offers.creation_date DESC
+        `, [assigneeId]);
+
+    return res.send({ tasks: tasksWithMyOffers });
+});
+
+router.post('/api/tasks/:id/offers', isLoggedIn, isAllowedRole(['assignee']), async (req, res) => {
+
+    const taskId = req.params.id;
+    const assigneeId = req.session.user.id; 
+    const { amount, message } = req.body;
+
+    if (!amount) {
+        return res.status(400).send({ errorMessage: "Please provide an amount." });
+    }
+
+    const task = await db.get('SELECT * FROM tasks WHERE id = ?', [taskId]);
+    if (!task) {
+        return res.status(404).send({ errorMessage: `Task with id ${taskId} not found.` });
+    }
+
+    if (task.status !== 'pending') {
+        return res.status(400).send({ errorMessage: `Task with id ${taskId} is not open for receiving offers.` });
+    }
+
+    const nowISO8601 = new Date().toISOString();
+
+    await db.run(`
+            INSERT INTO offers (task_id, assignee_id, amount, message, creation_date)
+            VALUES (?, ?, ?, ?, ?)
+        `, [taskId, assigneeId, amount, message || null, nowISO8601]);
+
+    return res.status(201).send({ message: "Offer submitted successfully!" });
+});
 
 // Insurance claims
 
