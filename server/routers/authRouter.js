@@ -9,7 +9,7 @@ router.post('/auth/signup', async (req, res) => {
     const { email, password, role } = req.body;
 
     if (!email || !password || !role) {
-        res.status(400).send({ errorMessage: "Please provide both email, password and desired goal with the platform." });
+        return res.status(400).send({ errorMessage: "Please provide both email, password and desired goal with the platform." });
     }
 
     if (role !== 'customer' && role !== 'assignee') {
@@ -38,31 +38,25 @@ router.post('/auth/login', async (req, res) => {
 
         const user = await db.get(`SELECT * FROM users WHERE email = ?`, [email]);
         if (!user) {
-            // No matching email is found in the database
             return res.status(401).send({ errorMessage: "Wrong email or password." });
         }
 
         const userHashedPassword = user.hashed_password;
         const isSamePassword = await comparePasswords(password, userHashedPassword);
         if (!isSamePassword) {
-            // The input password does not match the password in the database
             return res.status(401).send({ errorMessage: "Wrong email or password." });
         }
 
-        let isAdmin = false;
-        if (user.is_admin === 1) {
-            isAdmin = true;
-        }
-
         req.session.user = {
+            id: user.id,
             email: user.email,
-            isAdmin: isAdmin
+            role: user.role
         }
 
         return res.send({ message: 'Logged in as user: ', user: req.session.user });
     } catch (error) {
-        console.error('FEJL FEJL, JEG GÅR AMOK', error);
-        res.status(500).send({ errorMessage: 'Pis mig i munden' });
+        console.error('Error during login:', error);
+        res.status(500).send({ errorMessage: 'Internal server error.' });
     }
 });
 
