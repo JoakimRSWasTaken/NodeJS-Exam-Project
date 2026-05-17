@@ -27,9 +27,9 @@ await db.exec(`
         assignee_id INTEGER,
         title VARCHAR(255) NOT NULL,
         description TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'pending' -- Der skelnes mellem 'pending', 'accepted', 'completed' og 'cancelled'
+        status TEXT NOT NULL DEFAULT 'pending', -- Der skelnes mellem 'pending', 'accepted', 'completed' og 'cancelled'
         creation_date TEXT NOT NULL, -- TEXT as ISO8601 strings ("YYYY-MM-DD HH:MM:SS.SSS") siger https://www.sqlite.org/datatype3.html
-        completion_date TEXT NOT NULL,
+        completion_date TEXT,
         FOREIGN KEY (customer_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (assignee_id) REFERENCES users (id) ON DELETE CASCADE
     );
@@ -56,7 +56,7 @@ await db.exec(`
         description TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT 'pending', -- Der skelnes mellem 'pending', 'approved' og 'denied'
         creation_date TEXT NOT NULL, -- TEXT as ISO8601 strings ("YYYY-MM-DD HH:MM:SS.SSS") siger https://www.sqlite.org/datatype3.html
-        handled_date TEXT NOT NULL,
+        handled_date TEXT,
         FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
         FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE
     );
