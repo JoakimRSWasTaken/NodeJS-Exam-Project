@@ -6,7 +6,7 @@ export async function isLoggedIn(req, res, next) {
     }
 }
 
-export async function isAllowedRole(allowedRoles) {
+export function isAllowedRole(allowedRoles) {
     return (req, res, next) => {
 
         const role = req.session.user.role;

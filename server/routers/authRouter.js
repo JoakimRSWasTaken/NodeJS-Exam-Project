@@ -22,7 +22,7 @@ router.post('/auth/signup', async (req, res) => {
     try {
         await sendWelcomeMail(email)
     } catch (error) {
-        console.error({ errorMessage: 'Error sending welcome mail', error });
+        console.error({ errorMessage: 'Error sending welcome mail.', error });
     }
 
     res.status(201).send({ message: `User with email ${email} created.` });

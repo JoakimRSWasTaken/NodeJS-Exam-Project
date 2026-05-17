@@ -14,6 +14,8 @@ if (deleteMode) {
 await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        first_name VARCHAR(25) NOT NULL,
+        last_name VARCHAR(50) NOT NULL,
         email VARCHAR(50) UNIQUE NOT NULL,
         hashed_password VARCHAR(255) NOT NULL,
         role TEXT NOT NULL DEFAULT 'customer' -- Der skelnes mellem 'customer', 'assignee' og 'admin'
@@ -67,9 +69,9 @@ if (deleteMode) {
     const assigneePassword = await hashPassword('assignee123');
     const adminPassword = await hashPassword('admin123');
 
-    await db.run(`INSERT INTO users (id, email, hashed_password, role) VALUES (?, ?, ?, ?)`, [2, 'customer@test.com', customerPassword, 'customer']);
-    await db.run(`INSERT INTO users (id, email, hashed_password, role) VALUES (?, ?, ?, ?)`, [3, 'provider@test.com', assigneePassword, 'assignee']);
-    await db.run(`INSERT INTO users (id, email, hashed_password, role) VALUES (?, ?, ?, ?)`, [1, 'admin@test.com', adminPassword, 'admin']);
+    await db.run(`INSERT INTO users (id, first_name, last_name, email, hashed_password, role) VALUES (?, ?, ?, ?, ?, ?)`, [2, 'Customer', 'Test', 'customer@test.com', customerPassword, 'customer']);
+    await db.run(`INSERT INTO users (id, first_name, last_name, email, hashed_password, role) VALUES (?, ?, ?, ?, ?, ?)`, [3, 'Assignee', 'Test', 'assignee@test.com', assigneePassword, 'assignee']);
+    await db.run(`INSERT INTO users (id, first_name, last_name, email, hashed_password, role) VALUES (?, ?, ?, ?, ?, ?)`, [1, 'Admin', 'Test', 'admin@test.com', adminPassword, 'admin']);
 
     const nowISO8601 = new Date().toISOString();
     await db.run(`
