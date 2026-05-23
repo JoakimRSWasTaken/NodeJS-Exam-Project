@@ -59,6 +59,8 @@ await db.exec(`
         status TEXT NOT NULL DEFAULT 'pending', -- Der skelnes mellem 'pending', 'approved' og 'denied'
         creation_date TEXT NOT NULL, -- TEXT as ISO8601 strings ("YYYY-MM-DD HH:MM:SS.SSS") siger https://www.sqlite.org/datatype3.html
         handled_date TEXT,
+        requested_compensation INTEGER NOT NULL,
+        decided_compensation INTEGER,
         FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
         FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE
     );

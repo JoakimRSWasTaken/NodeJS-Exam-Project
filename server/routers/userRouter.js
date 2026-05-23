@@ -3,10 +3,12 @@ import { isLoggedIn, isAllowedRole } from '../utils/authMiddleware.js';
 
 const router = Router();
 
+router.use(isLoggedIn);
+
 
 // Tasks - Generelt
 
-router.get('/api/tasks/pending', isLoggedIn, isAllowedRole(['customer', 'assignee']), async (req, res) => {
+router.get('/api/tasks/pending', isAllowedRole(['customer', 'assignee']), async (req, res) => {
     const tasks = await db.all(`
         SELECT tasks.*, users.first_name AS customer_name
         FROM tasks
@@ -17,7 +19,7 @@ router.get('/api/tasks/pending', isLoggedIn, isAllowedRole(['customer', 'assigne
     return res.send({ data: tasks });
 });
 
-router.get('/api/tasks/my-tasks', isLoggedIn, isAllowedRole(['customer', 'assignee']), async (req, res) => {
+router.get('/api/tasks/my-tasks', isAllowedRole(['customer', 'assignee']), async (req, res) => {
     const userId = req.session.user.id;
     const role = req.session.user.role;
     let tasks = [];
@@ -42,7 +44,7 @@ router.get('/api/tasks/my-tasks', isLoggedIn, isAllowedRole(['customer', 'assign
 
 // Customer
 
-router.post('/api/tasks', isLoggedIn, isAllowedRole(['customer']), async (req, res) => {
+router.post('/api/tasks', isAllowedRole(['customer']), async (req, res) => {
     const { title, description } = req.body;
     const customerId = req.session.user.id;
     const nowISO8601 = new Date().toISOString();
@@ -63,7 +65,7 @@ router.post('/api/tasks', isLoggedIn, isAllowedRole(['customer']), async (req, r
 });
 
 
-router.put('/api/tasks/:id', isLoggedIn, isAllowedRole(['customer']), async (req, res) => {
+router.put('/api/tasks/:id', isAllowedRole(['customer']), async (req, res) => {
 
     const taskId = req.params.id;
     const customerId = req.session.user.id;
@@ -86,17 +88,17 @@ router.put('/api/tasks/:id', isLoggedIn, isAllowedRole(['customer']), async (req
         return res.status(403).send({ errorMessage: `Task with id ${taskId} is not pending and cannot be edited.` });
     }
 
-    const updatedTask = await db.get(`
+    const updatedTask = await db.all(`
         UPDATE tasks 
         SET title = ?, description = ? 
         WHERE id = ?
         RETURNING *
         `, [title, description, taskId]);
-    return res.send({ data: updatedTask });
+    return res.send({ data: updatedTask[0] });
 });
 
 
-router.delete('/api/tasks/:id', isLoggedIn, isAllowedRole(['customer']), async (req, res) => {
+router.delete('/api/tasks/:id', isAllowedRole(['customer']), async (req, res) => {
 
     const taskId = req.params.id;
     const customerId = req.session.user.id;
@@ -115,7 +117,7 @@ router.delete('/api/tasks/:id', isLoggedIn, isAllowedRole(['customer']), async (
 
 // Assignee
 
-router.get('/api/offers/my-bids', isLoggedIn, isAllowedRole(['assignee']), async (req, res) => {
+router.get('/api/offers/my-bids', isAllowedRole(['assignee']), async (req, res) => {
 
     const assigneeId = req.session.user.id;
 
@@ -130,7 +132,7 @@ router.get('/api/offers/my-bids', isLoggedIn, isAllowedRole(['assignee']), async
     return res.send({ data: tasksWithMyOffers });
 });
 
-router.post('/api/tasks/:id/offers', isLoggedIn, isAllowedRole(['assignee']), async (req, res) => {
+router.post('/api/tasks/:id/offers', isAllowedRole(['assignee']), async (req, res) => {
 
     const taskId = req.params.id;
     const assigneeId = req.session.user.id;
@@ -162,7 +164,7 @@ router.post('/api/tasks/:id/offers', isLoggedIn, isAllowedRole(['assignee']), as
 
 // Insurance claims
 
-router.get('/api/insurance-claims/my-insurance-claims', isLoggedIn, isAllowedRole(['customer']), async (req, res) => {
+router.get('/api/insurance-claims/my-insurance-claims', isAllowedRole(['customer']), async (req, res) => {
     const customerId = req.session.user.id;
 
     const claims = await db.all(`
@@ -176,9 +178,9 @@ router.get('/api/insurance-claims/my-insurance-claims', isLoggedIn, isAllowedRol
     return res.send({ data: claims });
 });
 
-router.post('/api/insurance-claims', isLoggedIn, isAllowedRole(['customer']), async (req, res) => {
+router.post('/api/insurance-claims', isAllowedRole(['customer']), async (req, res) => {
     const customerId = req.session.user.id;
-    const { taskId, description } = req.body;
+    const { taskId, description, requestedCompensation } = req.body;
 
     if (!taskId || !description) {
         return res.status(400).send({ errorMessage: 'Please provide both a valid task and a description.' });
@@ -197,9 +199,9 @@ router.post('/api/insurance-claims', isLoggedIn, isAllowedRole(['customer']), as
     const now = new Date().toISOString();
 
     const result = await db.run(`
-            INSERT INTO insurance_claims (task_id, customer_id, description, creation_date, handled_date)
-            VALUES (?, ?, ?, ?, null)
-        `, [taskId, customerId, description, now]);
+            INSERT INTO insurance_claims (task_id, customer_id, description, creation_date, handled_date, requested_amount)
+            VALUES (?, ?, ?, ?, null, ?)
+        `, [taskId, customerId, description, now, requestedCompensation]);
 
     return res.status(201).send({ data: result });
 });
