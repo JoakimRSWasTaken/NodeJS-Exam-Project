@@ -1,0 +1,157 @@
+.admin-container {
+    font-family: sans-serif;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #fff;
+}
+
+.admin-container header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-container h2,
+.admin-container h3,
+.admin-container h4 {
+    margin: 0;
+    color: #fff;
+}
+
+.admin-container h3 {
+    margin-top: 2rem;
+}
+
+.admin-container hr {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 1.5rem 0;
+}
+
+.admin-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: #2d2d2d;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.admin-container th,
+.admin-container td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #444;
+}
+
+.admin-container th {
+    background: #3d3d3d;
+    color: #aaa;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+tr.pending {
+    background: #3a382c;
+}
+
+.desc-cell {
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge.pending {
+    background: #f39c12;
+    color: #000;
+}
+
+.badge.approved {
+    background: #2ecc71;
+    color: #000;
+}
+
+.badge.denied {
+    background: #e74c3c;
+    color: #fff;
+}
+
+.management-panel {
+    background: #222;
+    padding: 1.5rem;
+    border-left: 4px solid #f39c12;
+}
+
+.form-group {
+    margin: 1rem 0;
+}
+
+.admin-container input[type="number"] {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: #333;
+    color: #fff;
+    margin-left: 0.5rem;
+}
+
+.decision-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.decision-buttons .approve {
+    background-color: #2ecc71;
+    color: #000;
+}
+
+.decision-buttons .deny {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.decision-buttons .cancel {
+    background-color: #7f8c8d;
+    color: #fff;
+}
+
+.money {
+    color: #2ecc71;
+}
+
+.action-btn {
+    background-color: #f39c12;
+    color: #000;
+    font-weight: bold;
+}
+
+.admin-container button {
+    background-color: #fff;
+    border: 1px solid #d5d9d9;
+    border-radius: 8px;
+    box-shadow: rgba(213, 217, 217, 0.5) 0 2px 5px 0;
+    box-sizing: border-box;
+    color: #0f1111;
+    cursor: pointer;
+    display: inline-block;
+    font-family: sans-serif;
+    font-size: 13px;
+    line-height: 29px;
+    padding: 0 12px;
+    text-align: center;
+    user-select: none;
+    width: auto;
+    min-width: 80px;
+}
+
+.admin-container button:hover {
+    background-color: #f7fafa;
+}

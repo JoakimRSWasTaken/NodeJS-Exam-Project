@@ -1,0 +1,78 @@
+.card-container {
+    perspective: 1000px;
+    width: 62.5rem;
+    height: 65vh;
+    min-height: 50%;
+    margin: 1rem auto;
+}
+
+.card-container .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+}
+
+.card-container .card.signup {
+    transform: rotateY(180deg);
+}
+
+.login-card,
+.signup-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 15em;
+    border-radius: 6px;
+    background: rgb(89, 89, 88);
+    backface-visibility: hidden;
+    border: 1px solid;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.signup-card {
+    transform: rotateY(180deg);
+}
+
+/* Beskyttede element-tags, så de kun rammer inde i loginkortet */
+.card-container fieldset {
+    border: none;
+}
+
+.card-container button {
+    background-color: #fff;
+    border: 1px solid #d5d9d9;
+    border-radius: 8px;
+    box-shadow: rgba(213, 217, 217, 0.5) 0 2px 5px 0;
+    box-sizing: border-box;
+    color: #0f1111;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Amazon Ember", sans-serif;
+    font-size: 13px;
+    line-height: 29px;
+    padding: 0 10px 0 11px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    width: 120px;
+    margin: 0.25rem;
+}
+
+.card-container button:hover {
+    background-color: #f7fafa;
+}
+
+.card-container button:focus {
+    border-color: #008296;
+    box-shadow: rgba(213, 217, 217, 0.5) 0 2px 5px 0;
+    outline: 0;
+}

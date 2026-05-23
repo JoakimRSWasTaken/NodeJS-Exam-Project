@@ -1,6 +1,6 @@
 import { Router } from "express";
 import db from "../database/connection.js";
-import { isLoggedIn, isAllowedRole } from "../middleware/authMiddleware.js"; // Tilpas stien til dine middlewares
+import { isLoggedIn, isAllowedRole } from "../utils/authMiddleware.js"; // Tilpas stien til dine middlewares
 
 const router = Router();
 
