@@ -3,6 +3,7 @@ import { isLoggedIn, isAllowedRole } from '../utils/authMiddleware.js';
 
 const router = Router();
 
+
 // Tasks - Generelt
 
 router.get('/api/tasks/pending', isLoggedIn, isAllowedRole(['customer', 'assignee']), async (req, res) => {
@@ -38,6 +39,7 @@ router.get('/api/tasks/my-tasks', isLoggedIn, isAllowedRole(['customer', 'assign
     return res.send({ data: tasks });
 });
 
+
 // Customer
 
 router.post('/api/tasks', isLoggedIn, isAllowedRole(['customer']), async (req, res) => {
@@ -68,7 +70,7 @@ router.put('/api/tasks/:id', isLoggedIn, isAllowedRole(['customer']), async (req
     const { title, description } = req.body;
 
     if (!title || !description) {
-        return res.status(400).send({ errorMessage: "Please provide an updated title and description." });
+        return res.status(400).send({ errorMessage: 'Please provide an updated title and description.' });
     }
 
     const taskToUpdate = await db.all(`SELECT * FROM tasks WHERE id = ?`, [taskId]);
@@ -111,7 +113,6 @@ router.delete('/api/tasks/:id', isLoggedIn, isAllowedRole(['customer']), async (
 });
 
 
-
 // Assignee
 
 router.get('/api/offers/my-bids', isLoggedIn, isAllowedRole(['assignee']), async (req, res) => {
@@ -126,17 +127,17 @@ router.get('/api/offers/my-bids', isLoggedIn, isAllowedRole(['assignee']), async
             ORDER BY offers.creation_date DESC
         `, [assigneeId]);
 
-    return res.send({ tasks: tasksWithMyOffers });
+    return res.send({ data: tasksWithMyOffers });
 });
 
 router.post('/api/tasks/:id/offers', isLoggedIn, isAllowedRole(['assignee']), async (req, res) => {
 
     const taskId = req.params.id;
-    const assigneeId = req.session.user.id; 
+    const assigneeId = req.session.user.id;
     const { amount, message } = req.body;
 
     if (!amount) {
-        return res.status(400).send({ errorMessage: "Please provide an amount." });
+        return res.status(400).send({ errorMessage: 'Please provide an amount.' });
     }
 
     const task = await db.get('SELECT * FROM tasks WHERE id = ?', [taskId]);
@@ -150,18 +151,58 @@ router.post('/api/tasks/:id/offers', isLoggedIn, isAllowedRole(['assignee']), as
 
     const nowISO8601 = new Date().toISOString();
 
-    await db.run(`
+    const result = await db.run(`
             INSERT INTO offers (task_id, assignee_id, amount, message, creation_date)
             VALUES (?, ?, ?, ?, ?)
         `, [taskId, assigneeId, amount, message || null, nowISO8601]);
 
-    return res.status(201).send({ message: "Offer submitted successfully!" });
+    return res.status(201).send({ data: result });
 });
+
 
 // Insurance claims
 
-// route til at se sine egne insurance claims
-// route til at oprette en insurance claim
+router.get('/api/insurance-claims/my-insurance-claims', isLoggedIn, isAllowedRole(['customer']), async (req, res) => {
+    const customerId = req.session.user.id;
+
+    const claims = await db.all(`
+            SELECT insurance_claims.*, tasks.title AS task_title 
+            FROM insurance_claims
+            JOIN tasks ON insurance_claims.task_id = tasks.id
+            WHERE insurance_claims.customer_id = ?
+            ORDER BY insurance_claims.creation_date DESC
+        `, [customerId]);
+
+    return res.send({ data: claims });
+});
+
+router.post('/api/insurance-claims', isLoggedIn, isAllowedRole(['customer']), async (req, res) => {
+    const customerId = req.session.user.id;
+    const { taskId, description } = req.body;
+
+    if (!taskId || !description) {
+        return res.status(400).send({ errorMessage: 'Please provide both a valid task and a description.' });
+    }
+
+    const task = await db.get('SELECT * FROM tasks WHERE id = ?', [taskId]);
+
+    if (!task) {
+        return res.status(404).send({ errorMessage: `Task with id ${taskId} not found.` });
+    }
+
+    if (task.customer_id !== customerId) {
+        return res.status(403).send({ errorMessage: 'You are not the owner of this task.' });
+    }
+
+    const now = new Date().toISOString();
+
+    const result = await db.run(`
+            INSERT INTO insurance_claims (task_id, customer_id, description, creation_date, handled_date)
+            VALUES (?, ?, ?, ?, null)
+        `, [taskId, customerId, description, now]);
+
+    return res.status(201).send({ data: result });
+});
 
 
 export default router;
