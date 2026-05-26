@@ -2,8 +2,8 @@
 
 ## Running the project
 1. Clone the project
-   - https://github.com/JoakimRSWasTaken/NodeJS-Mandatory-Assignment-II-Auth.git
-   - git@github.com:JoakimRSWasTaken/NodeJS-Mandatory-Assignment-II-Auth.git
+   - https://github.com/JoakimRSWasTaken/NodeJS-Exam-Project.git
+   - git@github.com:JoakimRSWasTaken/NodeJS-Exam-Project.git
 1. Open two terminal windows
 2. In terminal 1, stay in the root folder, in terminal 2, `$ cd client`
 3. In terminal 1, run `$ node server/database/connection.js`
